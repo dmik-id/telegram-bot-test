@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/dmik-id/telegram-bot-test#readme",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "node-telegram-bot-api": "^0.54.0",
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.12",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.5"
   }
 }

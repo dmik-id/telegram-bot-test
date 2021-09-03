@@ -1,5 +1,5 @@
 const TelegramApi = require('node-telegram-bot-api')
-
+const sequilize = require('./db')
 const {gameOptions, againOptions} = require('./options')
 const token = '1966667817:AAHK1hPEIyh7LlL-6GSXu8p2ZvnQBvm7xJM'
 
@@ -23,7 +23,17 @@ const startGame = async (chatId) => {
 
 
 
-const start = () =>{
+const start = async () =>{
+
+    try{
+        await sequilize.authenticate()
+        await sequilize.sync()
+
+    }catch(e){
+        console.log('connection with db default')
+    }
+
+
 
     bot.setMyCommands([
         {command: '/start', description:'START'},
