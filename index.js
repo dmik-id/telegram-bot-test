@@ -13,15 +13,6 @@ const bot  = new TelegramApi(token, {polling: true})
 const chats = {}
 
 
-const startGame = async (chatId) => {
-    await bot.sendMessage(chatId, 'start the game, u need guess the number from 0 to 9')
-    const randomNumber = Math.floor(Math.random() * 10)
-    console.log(randomNumber)//////////////////////////////////////////////////////////// 
-
-    chats[chatId] = randomNumber
-    await bot.sendMessage(chatId, 'guess the number', gameOptions)
-
-}
 
 const start = async () =>{
 
@@ -38,7 +29,6 @@ const start = async () =>{
     bot.setMyCommands([
         {command: '/start', description:'START'},
         {command: '/info', description: 'INFO'},
-        {command: '/game', description:'GAME'}
     ])
     
     
@@ -49,7 +39,11 @@ const start = async () =>{
             const chatId = msg.chat.id
                     
             if (text === '/start'){
-                await UserModel.create({chatId})
+                const candidate = await UserModel.findOne({chatId})
+                if (!candidate){
+                    await UserModel.create({chatId})
+                }
+
                 await bot.sendSticker(chatId, 'https://tlgrm.ru/_/stickers/972/d03/972d03b1-80b4-43ac-8063-80e62b150d91/2.webp')
                 return bot.sendMessage(chatId, `добро пожаловать`)
                 
@@ -58,13 +52,10 @@ const start = async () =>{
             if (text === '/info'){
                 const user = await UserModel.findOne({chatId})
         
-                return bot.sendMessage(chatId, `тебя зовут ${msg.from.first_name} right: ${user.right}, wrong: ${user.wrong}`)
+                return bot.sendMessage(chatId, `Итак ${msg.from.first_name},бот готов служить вам, дайте ответ на несколько вопросов`)
             }
     
-            if (text === '/game'){
-                
-                return startGame(chatId)
-            }
+
     
             return bot.sendMessage(chatId, 'i dont know')
             
@@ -78,24 +69,6 @@ const start = async () =>{
     bot.on('callback_query', async msg =>{
         const data = msg.data
         const chatId = msg.message.chat.id
-
-        const user = await UserModel.findOne({chatId})
-
-        if(data === '/again'){
-            return startGame(chatId)
-
-        }
-        
-
-        if(data == chats[chatId]){
-            user.right += 1
-            await bot.sendMessage(chatId, `true`, againOptions)
-        }
-        else{
-            user.wrong += 1
-            await bot.sendMessage(chatId, `false, bot guess - ${chats[chatId]}`, againOptions)
-        }
-        await user.save()
        
     })
 
